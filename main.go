@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -66,6 +67,29 @@ func productsHandler(writer http.ResponseWriter, request *http.Request) {
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Write(data)
+
+	case http.MethodPost:
+		var newProduct Product
+		requestData, error := ioutil.ReadAll(request.Body)
+		if error != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		error = json.Unmarshal(requestData, &newProduct)
+		if error != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		if newProduct.ProductID != 0 {
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		newProductId := len(productList) + 1
+		newProduct.ProductID = newProductId
+		productList = append(productList, newProduct)
+
+		writer.WriteHeader(http.StatusCreated)
+
 	}
 }
 
