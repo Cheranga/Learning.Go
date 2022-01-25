@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type Product struct {
@@ -39,7 +41,7 @@ func init() {
 	  "quantityOnHand": 9217,
 	  "productName": "leg warmers"
 	},
-	{
+	{ 
 	  "productId": 3,
 	  "manufacturer": "Swaniawski, Bartoletti and Bruen",
 	  "sku": "q0L657ys7",
@@ -53,6 +55,48 @@ func init() {
 	error := json.Unmarshal([]byte(productsJson), &productList)
 	if error != nil {
 		log.Fatal(error)
+	}
+}
+
+func findProductById(productId int) (*Product, int) {
+	for i, product := range productList {
+		if product.ProductID == productId {
+			return &product, i
+		}
+	}
+
+	return nil, -1
+}
+
+func productHandler(writer http.ResponseWriter, request *http.Request) {
+	queryParamters := strings.Split(request.URL.Path, "products/")
+	productId, error := strconv.Atoi(queryParamters[len(queryParamters)-1])
+	if error != nil {
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	product, _ := findProductById(productId)
+	if product == nil {
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	switch request.Method {
+	case http.MethodGet:
+		productJson, error := json.Marshal(product)
+		if error != nil {
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write(productJson)
+		writer.WriteHeader(http.StatusOK)
+	case http.MethodPut:
+		// TODO
+		writer.WriteHeader(http.StatusOK)
+	default:
+		writer.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
@@ -107,6 +151,7 @@ func anotherTestHandler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	http.HandleFunc("/products", productsHandler)
+	http.HandleFunc("/products/", productHandler)
 
 	http.Handle("/test", &testHandler{Message: "Hi from handler function"})
 	http.HandleFunc("/test2", anotherTestHandler)
