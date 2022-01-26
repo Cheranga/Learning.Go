@@ -6,11 +6,11 @@ type Customer struct {
 }
 
 type CustomerData struct {
-	Id        int    `json: "id"`
+	Id        int    `json:"id"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	Avatar    string `json: "avatar"`
+	Avatar    string `json:"avatar"`
 }
 
 type SupportData struct {
