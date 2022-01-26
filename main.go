@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Product struct {
@@ -56,6 +58,16 @@ func init() {
 	if error != nil {
 		log.Fatal(error)
 	}
+}
+
+func middlewareHandler(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Println("started processing request")
+		start := time.Now()
+		handler.ServeHTTP(writer, request)
+
+		fmt.Printf("finished processing %s", time.Since(start))
+	})
 }
 
 func findProductById(productId int) (*Product, int) {
@@ -150,8 +162,15 @@ func anotherTestHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/products", productsHandler)
-	http.HandleFunc("/products/", productHandler)
+
+	productHandler := http.HandlerFunc(productHandler)
+	productListHandler := http.HandlerFunc(productsHandler)
+
+	http.Handle("/products/", middlewareHandler(productHandler))
+	http.Handle("/products", middlewareHandler(productListHandler))
+	// Commenting so that the handlers can work with the middleware handler
+	// http.HandleFunc("/products", middlewareHandler(productListHandler))
+	// http.HandleFunc("/products/", productHandler)
 
 	http.Handle("/test", &testHandler{Message: "Hi from handler function"})
 	http.HandleFunc("/test2", anotherTestHandler)
