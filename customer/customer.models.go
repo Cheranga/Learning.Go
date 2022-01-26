@@ -17,3 +17,8 @@ type SupportData struct {
 	Url  string `json:"url"`
 	Text string `json:"text"`
 }
+
+type GetCustomerByIdResponse struct {
+	Id    int
+	Email string
+}
