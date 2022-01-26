@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/cheranga/inventoryservice/customer"
 	"github.com/cheranga/inventoryservice/product"
 )
 
@@ -21,6 +22,8 @@ func anotherTestHandler(writer http.ResponseWriter, request *http.Request) {
 func main() {
 
 	product.SetupRoutes()
+	customer.SetupRoutes()
+
 	// productHandler := http.HandlerFunc(product.ProductHandler)
 	// productListHandler := http.HandlerFunc(product.ProductsHandler)
 
