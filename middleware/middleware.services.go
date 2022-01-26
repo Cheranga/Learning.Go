@@ -12,6 +12,6 @@ func MiddlewareHandler(handler http.Handler) http.Handler {
 		start := time.Now()
 		handler.ServeHTTP(writer, request)
 
-		fmt.Printf("finished processing %s", time.Since(start))
+		fmt.Printf("finished processing %s\n", time.Since(start))
 	})
 }

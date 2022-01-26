@@ -27,3 +27,7 @@ type GetCustomerByIdResponse struct {
 	Url       string
 	Text      string
 }
+
+type GetCustomerByIdRequest struct {
+	CustomerId int
+}

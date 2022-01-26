@@ -8,10 +8,14 @@ import (
 	"strconv"
 )
 
-const baseUrl = "https://reqres.in/api/users"
+type ICustomerHttpService interface {
+	GetCustomerById(customerId int) (*GetCustomerByIdResponse, error)
+}
 
-func GetCustomerById(customerId int) (*GetCustomerByIdResponse, error) {
+type CustomerHttpService struct {
+}
 
+func (customerService CustomerHttpService) GetCustomerById(customerId int) (*GetCustomerByIdResponse, error) {
 	url := fmt.Sprintf("%s/%s", baseUrl, strconv.Itoa(customerId))
 	response, err := http.Get(url)
 	if err != nil {

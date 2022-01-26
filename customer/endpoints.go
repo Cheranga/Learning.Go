@@ -16,7 +16,10 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 			return
 		}
 
-		dto, dtoError := GetCustomerById(customerId)
+		var appRequest = GetCustomerByIdRequest{
+			CustomerId: customerId,
+		}
+		dto, dtoError := GetCustomer(appRequest)
 		if dtoError != nil {
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
