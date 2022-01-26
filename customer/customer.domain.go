@@ -30,8 +30,13 @@ func GetCustomerById(customerId int) (*GetCustomerByIdResponse, error) {
 	}
 
 	var dto = GetCustomerByIdResponse{
-		Id:    customerResponse.Data.Id,
-		Email: customerResponse.Data.Email,
+		Id:        customerResponse.Data.Id,
+		Email:     customerResponse.Data.Email,
+		FirstName: customerResponse.Data.FirstName,
+		LastName:  customerResponse.Data.LastName,
+		Avatar:    customerResponse.Data.Avatar,
+		Url:       customerResponse.Support.Url,
+		Text:      customerResponse.Support.Text,
 	}
 
 	return &dto, nil

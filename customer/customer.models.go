@@ -19,6 +19,11 @@ type SupportData struct {
 }
 
 type GetCustomerByIdResponse struct {
-	Id    int
-	Email string
+	Id        int
+	Email     string
+	FirstName string
+	LastName  string
+	Avatar    string
+	Url       string
+	Text      string
 }
