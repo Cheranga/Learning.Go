@@ -19,6 +19,7 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 		var appRequest = GetCustomerByIdRequest{
 			CustomerId: customerId,
 		}
+
 		dto, dtoError := GetCustomer(appRequest)
 		if dtoError != nil {
 			writer.WriteHeader(http.StatusInternalServerError)
