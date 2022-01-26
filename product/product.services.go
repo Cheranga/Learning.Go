@@ -2,38 +2,15 @@ package product
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
-func middlewareHandler(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Println("started processing request")
-		start := time.Now()
-		handler.ServeHTTP(writer, request)
-
-		fmt.Printf("finished processing %s", time.Since(start))
-	})
-}
-
-func SetupRoutes() {
-	productHandler := http.HandlerFunc(productHandler)
-	productListHandler := http.HandlerFunc(productsHandler)
-
-	http.Handle("/products/", middlewareHandler(productHandler))
-	http.Handle("/products", middlewareHandler(productListHandler))
-}
-
 func productHandler(writer http.ResponseWriter, request *http.Request) {
-	queryParamters := strings.Split(request.URL.Path, "products/")
-	productId, error := strconv.Atoi(queryParamters[len(queryParamters)-1])
-	if error != nil {
-		writer.WriteHeader(http.StatusNotFound)
+	productId, err := getProductIdFromUrl(request)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
