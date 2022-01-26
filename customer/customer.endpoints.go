@@ -31,5 +31,8 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Write(responseBytes)
 		writer.WriteHeader(http.StatusOK)
+
+	default:
+		writer.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
