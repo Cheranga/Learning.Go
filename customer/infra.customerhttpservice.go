@@ -8,8 +8,11 @@ import (
 	"strconv"
 )
 
+const baseUrl = "https://reqres.in/api/users"
+
 type ICustomerHttpService interface {
 	GetCustomerById(customerId int) (*GetCustomerByIdResponse, error)
+	GetAllCustomers(page int) (*GetCustomersResponse, error)
 }
 
 type CustomerHttpService struct {
@@ -41,6 +44,27 @@ func (customerService CustomerHttpService) GetCustomerById(customerId int) (*Get
 		Avatar:    customerResponse.Data.Avatar,
 		Url:       customerResponse.Support.Url,
 		Text:      customerResponse.Support.Text,
+	}
+
+	return &dto, nil
+}
+
+func (customerService CustomerHttpService) GetAllCustomers(page int) (*GetCustomersResponse, error) {
+	url := fmt.Sprintf("%s?page=%s", baseUrl, strconv.Itoa(page))
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	responseData, responseError := ioutil.ReadAll(response.Body)
+	if responseError != nil {
+		return nil, responseError
+	}
+
+	var dto GetCustomersResponse
+	responseDataError := json.Unmarshal(responseData, &dto)
+	if responseDataError != nil {
+		return nil, responseDataError
 	}
 
 	return &dto, nil

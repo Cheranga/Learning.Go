@@ -8,6 +8,8 @@ import (
 
 func SetupRoutes() {
 	customerHandler := http.HandlerFunc(customerHandler)
+	customersHandler := http.HandlerFunc(customersHandler)
 
+	http.Handle("/all/customers/", middleware.MiddlewareHandler(customersHandler))
 	http.Handle("/customers/", middleware.MiddlewareHandler(customerHandler))
 }

@@ -1,7 +1,5 @@
 package customer
 
-const baseUrl = "https://reqres.in/api/users"
-
 var customerHttpService ICustomerHttpService
 
 func GetCustomer(request GetCustomerByIdRequest) (*GetCustomerByIdResponse, error) {
@@ -9,6 +7,18 @@ func GetCustomer(request GetCustomerByIdRequest) (*GetCustomerByIdResponse, erro
 	customerHttpService = CustomerHttpService{}
 
 	customerResponse, customerError := customerHttpService.GetCustomerById(request.CustomerId)
+	if customerError != nil {
+		return nil, customerError
+	}
+
+	return customerResponse, nil
+}
+
+func GetCustomers(request GetCustomersByPageIdRequest) (*GetCustomersResponse, error) {
+
+	customerHttpService = CustomerHttpService{}
+
+	customerResponse, customerError := customerHttpService.GetAllCustomers(request.PageId)
 	if customerError != nil {
 		return nil, customerError
 	}

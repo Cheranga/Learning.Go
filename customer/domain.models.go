@@ -31,3 +31,12 @@ type GetCustomerByIdResponse struct {
 type GetCustomerByIdRequest struct {
 	CustomerId int
 }
+
+type GetCustomersByPageIdRequest struct {
+	PageId int
+}
+
+type GetCustomersResponse struct {
+	Total int            `json:"total"`
+	Data  []CustomerData `json:"data"`
+}
