@@ -1,7 +1,6 @@
 package customer
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/cheranga/inventoryservice/util"
@@ -21,20 +20,7 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 
 		dto, dtoError := GetCustomer(appRequest)
-		if dtoError != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		var responseBytes, _ = json.Marshal(dto)
-		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		writer.Header().Set("Content-Type", "application/json")
-		writer.Write(responseBytes)
-		writer.WriteHeader(http.StatusOK)
+		RenderCustomerResponse(writer, dto, dtoError)
 
 	default:
 		writer.WriteHeader(http.StatusMethodNotAllowed)
@@ -59,15 +45,7 @@ func customersHandler(writer http.ResponseWriter, request *http.Request) {
 			return
 		}
 
-		var responseBytes, _ = json.Marshal(dto)
-		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		writer.Header().Set("Content-Type", "application/json")
-		writer.Write(responseBytes)
-		writer.WriteHeader(http.StatusOK)
+		RenderCustomersResponse(writer, dto, dtoError)
 
 	default:
 		writer.WriteHeader(http.StatusMethodNotAllowed)
