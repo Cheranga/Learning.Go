@@ -2,7 +2,6 @@ package customer
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,34 +11,30 @@ import (
 const baseUrl = "https://reqres.in/api/users"
 
 type ICustomerHttpService interface {
-	GetCustomerById(customerId int) (GetCustomerByIdResponse, error)
+	GetCustomerById(customerId int) (GetCustomerByIdResponse, ErrorResponse)
 	GetAllCustomers(page int) (GetCustomersResponse, error)
 }
 
 type CustomerHttpService struct {
 }
 
-func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetCustomerByIdResponse, error) {
+func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetCustomerByIdResponse, ErrorResponse) {
 	url := fmt.Sprintf("%s/%s", baseUrl, strconv.Itoa(customerId))
 	response, err := http.Get(url)
 	if err != nil {
-		return GetCustomerByIdResponse{}, err
+		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: CannotConnectToApi, ErrorMessage: CannotConnectToApiMessage}
 	}
 
-	responseData, responseError := ioutil.ReadAll(response.Body)
-	if responseError != nil {
-		return GetCustomerByIdResponse{}, responseError
-	}
-
-	responseContent := string(responseData)
-	if responseContent == "{}" {
-		return GetCustomerByIdResponse{}, errors.New("No HTTP response")
-	}
+	responseData, _ := ioutil.ReadAll(response.Body)
 
 	var customerResponse Customer
 	responseDataError := json.Unmarshal(responseData, &customerResponse)
 	if responseDataError != nil {
-		return GetCustomerByIdResponse{}, responseDataError
+		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: InvalidResponse, ErrorMessage: InvalidResponseMessage}
+	}
+
+	if customerId != customerResponse.Data.Id {
+		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: CustomerNotFound, ErrorMessage: CustomerNotFoundMessage}
 	}
 
 	var dto = GetCustomerByIdResponse{
@@ -52,7 +47,7 @@ func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetC
 		Text:      customerResponse.Support.Text,
 	}
 
-	return dto, nil
+	return dto, ErrorResponse{}
 }
 
 func (customerService CustomerHttpService) GetAllCustomers(page int) (GetCustomersResponse, error) {

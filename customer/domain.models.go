@@ -40,3 +40,19 @@ type GetCustomersResponse struct {
 	Total int            `json:"total"`
 	Data  []CustomerData `json:"data"`
 }
+
+type ErrorResponse struct {
+	ErrorCode    string
+	ErrorMessage string
+}
+
+func (errorResponse *ErrorResponse) IsValid() bool {
+	return errorResponse.ErrorCode == ""
+}
+
+const CannotConnectToApi = "CannotConnectoToApi"
+const CannotConnectToApiMessage = "cannot connect to the customers API"
+const InvalidResponse = "InvalidHTTPResponseContent"
+const InvalidResponseMessage = "invalid HTTP response received"
+const CustomerNotFound = "CustomerNotFound"
+const CustomerNotFoundMessage = "customer not found"

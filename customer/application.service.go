@@ -2,7 +2,7 @@ package customer
 
 var customerHttpService ICustomerHttpService
 
-func GetCustomer(request GetCustomerByIdRequest) (GetCustomerByIdResponse, error) {
+func GetCustomer(request GetCustomerByIdRequest) (GetCustomerByIdResponse, ErrorResponse) {
 
 	customerHttpService = CustomerHttpService{}
 
