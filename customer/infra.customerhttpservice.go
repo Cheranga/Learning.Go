@@ -6,23 +6,25 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/cheranga/inventoryservice/common"
 )
 
 const baseUrl = "https://reqres.in/api/users"
 
 type ICustomerHttpService interface {
-	GetCustomerById(customerId int) (GetCustomerByIdResponse, ErrorResponse)
-	GetAllCustomers(page int) (GetCustomersResponse, error)
+	GetCustomerById(customerId int) (GetCustomerByIdResponse, common.ErrorResponse)
+	GetAllCustomers(page int) (GetCustomersResponse, common.ErrorResponse)
 }
 
 type CustomerHttpService struct {
 }
 
-func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetCustomerByIdResponse, ErrorResponse) {
+func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetCustomerByIdResponse, common.ErrorResponse) {
 	url := fmt.Sprintf("%s/%s", baseUrl, strconv.Itoa(customerId))
 	response, err := http.Get(url)
 	if err != nil {
-		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: CannotConnectToApi, ErrorMessage: CannotConnectToApiMessage}
+		return GetCustomerByIdResponse{}, common.ErrorResponse{ErrorCode: common.CannotConnectToApi, ErrorMessage: common.CannotConnectToApiMessage}
 	}
 
 	responseData, _ := ioutil.ReadAll(response.Body)
@@ -30,11 +32,11 @@ func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetC
 	var customerResponse Customer
 	responseDataError := json.Unmarshal(responseData, &customerResponse)
 	if responseDataError != nil {
-		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: InvalidResponse, ErrorMessage: InvalidResponseMessage}
+		return GetCustomerByIdResponse{}, common.ErrorResponse{ErrorCode: common.InvalidResponse, ErrorMessage: common.InvalidResponseMessage}
 	}
 
 	if customerId != customerResponse.Data.Id {
-		return GetCustomerByIdResponse{}, ErrorResponse{ErrorCode: CustomerNotFound, ErrorMessage: CustomerNotFoundMessage}
+		return GetCustomerByIdResponse{}, common.ErrorResponse{ErrorCode: common.CustomerNotFound, ErrorMessage: common.CustomerNotFoundMessage}
 	}
 
 	var dto = GetCustomerByIdResponse{
@@ -47,26 +49,23 @@ func (customerService CustomerHttpService) GetCustomerById(customerId int) (GetC
 		Text:      customerResponse.Support.Text,
 	}
 
-	return dto, ErrorResponse{}
+	return dto, common.ErrorResponse{}
 }
 
-func (customerService CustomerHttpService) GetAllCustomers(page int) (GetCustomersResponse, error) {
+func (customerService CustomerHttpService) GetAllCustomers(page int) (GetCustomersResponse, common.ErrorResponse) {
 	url := fmt.Sprintf("%s?page=%s", baseUrl, strconv.Itoa(page))
 	response, err := http.Get(url)
 	if err != nil {
-		return GetCustomersResponse{}, err
+		return GetCustomersResponse{}, common.ErrorResponse{ErrorCode: common.CannotConnectToApi, ErrorMessage: common.CannotConnectToApiMessage}
 	}
 
-	responseData, responseError := ioutil.ReadAll(response.Body)
-	if responseError != nil {
-		return GetCustomersResponse{}, responseError
-	}
+	responseData, _ := ioutil.ReadAll(response.Body)
 
 	var dto GetCustomersResponse
 	responseDataError := json.Unmarshal(responseData, &dto)
 	if responseDataError != nil {
-		return GetCustomersResponse{}, responseDataError
+		return GetCustomersResponse{}, common.ErrorResponse{ErrorCode: common.InvalidResponse, ErrorMessage: common.InvalidResponseMessage}
 	}
 
-	return dto, nil
+	return dto, common.ErrorResponse{}
 }

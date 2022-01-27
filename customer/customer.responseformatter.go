@@ -1,45 +1,36 @@
 package customer
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/cheranga/inventoryservice/common"
 )
 
-func RenderCustomerResponse(writer http.ResponseWriter, data GetCustomerByIdResponse, err ErrorResponse) {
+func RenderGetCustomerByIdResponse(writer http.ResponseWriter, data GetCustomerByIdResponse, err common.ErrorResponse) {
 
-	writer.Header().Set("Content-Type", "application/json")
-
-	if err.IsValid() {
-		responseBytes, _ := json.Marshal(data)
-		writer.Write(responseBytes)
-		writer.WriteHeader(http.StatusOK)
-		return
+	statusCode := http.StatusOK
+	if !err.IsValid() {
+		switch err.ErrorCode {
+		case common.CustomerNotFound:
+			statusCode = http.StatusNotFound
+		default:
+			statusCode = http.StatusInternalServerError
+		}
 	}
 
-	switch err.ErrorCode {
-	case CustomerNotFound:
-		errorData, _ := json.Marshal(err)
-		writer.Write(errorData)
-		writer.WriteHeader(http.StatusNotFound)
-	default:
-		errorData, _ := json.Marshal(err)
-		writer.Write(errorData)
-		writer.WriteHeader(http.StatusInternalServerError)
-	}
+	common.RenderResponse(writer, data, err, statusCode)
 }
 
-func RenderCustomersResponse(writer http.ResponseWriter, data GetCustomersResponse, err error) {
-	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
+func RenderGetCustomersResponse(writer http.ResponseWriter, data GetCustomersResponse, err common.ErrorResponse) {
+	statusCode := http.StatusOK
+	if !err.IsValid() {
+		switch err.ErrorCode {
+		case common.CustomerNotFound:
+			statusCode = http.StatusNotFound
+		default:
+			statusCode = http.StatusInternalServerError
+		}
 	}
 
-	var responseBytes, _ = json.Marshal(data)
-	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(responseBytes)
-	writer.WriteHeader(http.StatusOK)
+	common.RenderResponse(writer, data, err, statusCode)
 }

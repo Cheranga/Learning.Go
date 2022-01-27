@@ -20,7 +20,7 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 
 		dto, dtoError := GetCustomer(appRequest)
-		RenderCustomerResponse(writer, dto, dtoError)
+		RenderGetCustomerByIdResponse(writer, dto, dtoError)
 
 	default:
 		writer.WriteHeader(http.StatusMethodNotAllowed)
@@ -40,12 +40,8 @@ func customersHandler(writer http.ResponseWriter, request *http.Request) {
 			PageId: id,
 		}
 		dto, dtoError := GetCustomers(appRequest)
-		if dtoError != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 
-		RenderCustomersResponse(writer, dto, dtoError)
+		RenderGetCustomersResponse(writer, dto, dtoError)
 
 	default:
 		writer.WriteHeader(http.StatusMethodNotAllowed)
