@@ -13,6 +13,8 @@ func RenderGetCustomerByIdResponse(writer http.ResponseWriter, data GetCustomerB
 		switch err.ErrorCode {
 		case common.CustomerNotFound:
 			statusCode = http.StatusNotFound
+		case common.InvalidCustomerId:
+			statusCode = http.StatusBadRequest
 		default:
 			statusCode = http.StatusInternalServerError
 		}
@@ -27,6 +29,8 @@ func RenderGetCustomersResponse(writer http.ResponseWriter, data GetCustomersRes
 		switch err.ErrorCode {
 		case common.CustomerNotFound:
 			statusCode = http.StatusNotFound
+		case common.InvalidPageId:
+			statusCode = http.StatusBadRequest
 		default:
 			statusCode = http.StatusInternalServerError
 		}

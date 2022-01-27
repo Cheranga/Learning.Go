@@ -3,6 +3,7 @@ package customer
 import (
 	"net/http"
 
+	"github.com/cheranga/inventoryservice/common"
 	"github.com/cheranga/inventoryservice/util"
 )
 
@@ -11,7 +12,7 @@ func customerHandler(writer http.ResponseWriter, request *http.Request) {
 	case http.MethodGet:
 		customerId, err := util.GetIdFromUrl(request)
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			RenderGetCustomerByIdResponse(writer, GetCustomerByIdResponse{}, common.ErrorResponse{ErrorCode: common.InvalidCustomerId, ErrorMessage: common.InvalidCustomerIdMessage})
 			return
 		}
 
@@ -32,7 +33,7 @@ func customersHandler(writer http.ResponseWriter, request *http.Request) {
 	case http.MethodGet:
 		id, err := util.GetIdFromUrl(request)
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			RenderGetCustomersResponse(writer, GetCustomersResponse{}, common.ErrorResponse{ErrorCode: common.InvalidPageId, ErrorMessage: common.InvalidPageIdMessage})
 			return
 		}
 
